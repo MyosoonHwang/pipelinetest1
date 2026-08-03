@@ -25,7 +25,7 @@ spec:
         - name: app
           # SourceBuild가 push하는 이미지로 교체. 태그를 latest로 두면
           # SourceDeploy가 digest 기반으로 매번 최신 이미지를 재배포한다.
-          image: <TODO: Container Registry 도메인>/flask-cicd-practice:latest
+          image: wh-cr.kr.ncr.ntruss.com/flask-cicd-practice:latest
           ports:
             - containerPort: 8080
           env:
