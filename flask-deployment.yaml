@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-cicd-practice
+  labels:
+    app: flask-cicd-practice
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: flask-cicd-practice
+  template:
+    metadata:
+      labels:
+        app: flask-cicd-practice
+    spec:
+      imagePullSecrets:
+        - name: ncr-pull-secret
+      containers:
+        - name: app
+          # SourceBuild가 push하는 이미지로 교체. 태그를 latest로 두면
+          # SourceDeploy가 digest 기반으로 매번 최신 이미지를 재배포한다.
+          image: <TODO: Container Registry 도메인>/flask-cicd-practice:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_VERSION
+              value: "v1"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
