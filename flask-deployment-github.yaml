@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-cicd-practice-github
+  labels:
+    app: flask-cicd-practice-github
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: flask-cicd-practice-github
+  template:
+    metadata:
+      labels:
+        app: flask-cicd-practice-github
+    spec:
+      imagePullSecrets:
+        - name: ncr-pull-secret
+      containers:
+        - name: app
+          # SourceBuild(GitHub 소스)가 push하는 이미지로 교체
+          image: wh-cr.kr.ncr.ntruss.com/flask-cicd-practice-github:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_VERSION
+              value: "v1-github"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
