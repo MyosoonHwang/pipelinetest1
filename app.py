@@ -11,6 +11,7 @@ def index():
     return jsonify(
         message="NCP Developer Tools 배포 연습용 Flask 앱 - 파이프라인 자동 배포 테스트",
         version=os.environ.get("APP_VERSION", "v1"),
+        code_revision="v2-canary-test",
         hostname=socket.gethostname(),
     )
 
